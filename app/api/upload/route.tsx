@@ -1,21 +1,17 @@
-import { uploadFile } from "@/actions/upload";
+import { getFileUrl, uploadFile } from "@/actions/upload";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const body = await req.formData();
-    const pdf = body.get("pdf");
-
-    const res = await uploadFile(pdf as File);
-    console.log(res);
-    // {
-    //     path: 'pdfs',
-    //     id: '2afb8aee-c719-4dc2-b558-7ca404863eec',
-    //     fullPath: 'files/pdfs'
-    //   }
+    const file_name = body.get("file_name");
+    const pdf = body.get(file_name as string);
+    const res = await uploadFile(pdf as File, file_name as string);
+    const fileUrl = await getFileUrl(res!.path);
     return NextResponse.json(
       {
-        body: "Success",
+        success: true,
+        fileUrl: fileUrl?.data.publicUrl,
       },
       {
         status: 200,

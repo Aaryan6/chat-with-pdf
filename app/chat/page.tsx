@@ -1,11 +1,5 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import { ChatApp } from "@/components/component/chatapp";
-
-export default function ChatPage() {
-  return (
-    <div className="">
-      <ChatApp />
-    </div>
-  );
+export default function page() {
+  redirect("/");
 }
