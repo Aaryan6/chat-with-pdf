@@ -12,7 +12,9 @@ export default function Uploader() {
   const { toast } = useToast();
   const router = useRouter();
   const onDrop = useCallback((acceptedFiles: any) => {
-    setPdf(acceptedFiles[0]);
+    acceptedFiles[0].size > 10 * 1024 * 1024
+      ? toast({ title: "File size should be lower or equal to 10 MB" })
+      : setPdf(acceptedFiles[0]);
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
