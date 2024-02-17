@@ -35,6 +35,9 @@ dependencies:
   '@types/dotenv':
     specifier: ^8.2.0
     version: 8.2.0
+  '@vercel/analytics':
+    specifier: ^1.2.0
+    version: 1.2.0(next@14.1.0)(react@18.2.0)
   ai:
     specifier: ^2.2.35
     version: 2.2.35(react@18.2.0)(solid-js@1.8.15)(svelte@4.2.11)(vue@3.4.19)
@@ -2400,6 +2403,22 @@ packages:
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
     dev: true
+
+  /@vercel/analytics@1.2.0(next@14.1.0)(react@18.2.0):
+    resolution: {integrity: sha512-Q9hduY6+i73Is1m57Y3OlawleeYVi4cvuh/0j6IwmSndMOE4+BKkMwjnwz+7xnqfZCanipIG6+q+zHalH9X0Zg==}
+    peerDependencies:
+      next: '>= 13'
+      react: ^18 || ^19
+    peerDependenciesMeta:
+      next:
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      next: 14.1.0(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      server-only: 0.0.1
+    dev: false
 
   /@vue/compiler-core@3.4.19:
     resolution: {integrity: sha512-gj81785z0JNzRcU0Mq98E56e4ltO1yf8k5PQ+tV/7YHnbZkrM0fyFyuttnN8ngJZjbpofWE/m4qjKBiLl8Ju4w==}
@@ -5782,6 +5801,10 @@ packages:
   /seroval@1.0.4:
     resolution: {integrity: sha512-qQs/N+KfJu83rmszFQaTxcoJoPn6KNUruX4KmnmyD0oZkUoiNvJ1rpdYKDf4YHM05k+HOgCxa3yvf15QbVijGg==}
     engines: {node: '>=10'}
+    dev: false
+
+  /server-only@0.0.1:
+    resolution: {integrity: sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==}
     dev: false
 
   /set-function-length@1.2.1:
