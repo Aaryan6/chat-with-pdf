@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeftFromLine, PencilIcon, SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ModeToggle } from "@/components/theme-toggle";
+import Link from "next/link";
 
-export default function Sidebar() {
+export default function ChatHistory({ userChats }: { userChats: any }) {
   const router = useRouter();
   return (
     <aside className="w-80 border-r dark:border-zinc-700">
@@ -42,12 +43,17 @@ export default function Sidebar() {
             variant="ghost"
           />
         </div>
-        <div className="space-y-2">
-          <Card>
-            <CardContent className="py-3">
-              <h3 className="text-sm">Contact Name</h3>
-            </CardContent>
-          </Card>
+        <div className="flex flex-col gap-2">
+          {userChats.map((chat: any) => (
+            <Link href={`/chat/${chat.id}`} key={chat.id}>
+              <button className="w-full text-left bg-slate-900/50 text-slate-400 hover:text-white px-4 py-2 rounded-md">
+                <span className="text-sm">{chat.pdf_name}</span>
+              </button>
+            </Link>
+          ))}
+          {userChats.length === 0 && (
+            <h3 className="text-sm">No chats found</h3>
+          )}
         </div>
       </div>
     </aside>

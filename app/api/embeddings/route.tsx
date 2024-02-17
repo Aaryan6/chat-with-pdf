@@ -1,4 +1,9 @@
-import { createChat, getFileUrl, uploadFile } from "@/actions/upload";
+import {
+  createChat,
+  createMessage,
+  getFileUrl,
+  uploadFile,
+} from "@/actions/upload";
 import { db } from "@/db/dbConnect";
 import { chats, messages } from "@/db/schema";
 import { generateEmbeddings } from "@/utils/generate-embeddings";
@@ -13,29 +18,25 @@ export async function POST(req: Request) {
     const document_id = body.get("document_id");
     const file_name = body.get("file_name");
     const pdf = body.get(document_id as string);
-
-    console.log(userId, document_id, pdf);
-
     const docs = await loadPdf(pdf as Blob, document_id as string);
     await generateEmbeddings(docs);
 
     const storedFile = await uploadFile(pdf as File, document_id as string);
     const fileUrl = await getFileUrl(storedFile!.path);
 
-    // create entry of user
+    // create chat
     const chat = await createChat(
       userId as string,
       fileUrl?.data?.publicUrl!,
       file_name as string,
       document_id as string
     );
-    console.log(chat);
-
+    const chat_message = await createMessage(chat![0]?.id, userId as string);
     return NextResponse.json(
       {
         success: true,
         message: "File embedded successfully!",
-        data: chat,
+        data: chat_message,
       },
       {
         status: 200,

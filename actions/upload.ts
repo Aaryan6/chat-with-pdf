@@ -51,13 +51,72 @@ export async function createChat(
   }
 }
 
-export async function getChatByDocId(document_id: string, user_id: string) {
+export async function getChatByChatId(chat_id: number) {
   try {
     const { data, error } = await supabase
       .from("chatpdf-chats")
       .select("*")
-      .eq("user_id", user_id)
-      .eq("document_id", document_id);
+      .eq("id", chat_id);
+    if (error) console.log(error);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function createMessage(chat_id: number, user_id: string) {
+  try {
+    const { data, error } = await supabase
+      .from("chatpdf-messages")
+      .insert({
+        chat_id,
+        user_id,
+        messages: [],
+      })
+      .select();
+    if (error) console.log("create message", error);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function updateMessages(chat_id: string, messages: any[]) {
+  try {
+    const { data, error } = await supabase
+      .from("chatpdf-messages")
+      .update({
+        messages,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("chat_id", chat_id)
+      .select();
+    if (error) console.log(error);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getMessages(id: number) {
+  try {
+    const { data, error } = await supabase
+      .from("chatpdf-messages")
+      .select("*")
+      .eq("id", id);
+    if (error) console.log("get", error);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getChats(userId: string) {
+  try {
+    const { data, error } = await supabase
+      .from("chatpdf-chats")
+      .select("*")
+      .eq("user_id", userId);
     if (error) console.log(error);
     return data;
   } catch (error) {

@@ -1,5 +1,9 @@
 import { NextRequest } from "next/server";
-import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
+import {
+  Message as VercelChatMessage,
+  StreamingTextResponse,
+  LangChainStream,
+} from "ai";
 
 import { ChatOpenAI } from "@langchain/openai";
 import {
@@ -12,6 +16,9 @@ import {
   RunnableSequence,
 } from "@langchain/core/runnables";
 import { retrieveDoc } from "@/utils/retriever";
+import { ConversationalRetrievalQAChain } from "langchain/chains";
+import { updateMessages } from "@/actions/upload";
+import { auth } from "@clerk/nextjs";
 
 export const runtime = "edge";
 
@@ -25,37 +32,41 @@ conversation history: {chat_history}
 question: {question}
 answer: `;
 
-const STANDALONE_QUESTION_TEMPLATE = `Given some conversation history (if any) and a question, convert the question to a standalone question. 
-conversation history: {chat_history}
-question: {input} 
-standalone question:`;
+// standlone question --->
+
+// const STANDALONE_QUESTION_TEMPLATE = `Given some conversation history (if any) and a question, convert the question to a standalone question.
+// conversation history: {chat_history}
+// question: {input}
+// standalone question:`;
+
+// const standaloneQuestionPrompt = PromptTemplate.fromTemplate(
+//   STANDALONE_QUESTION_TEMPLATE
+// );
+
+// const standaloneQuestionChain = standaloneQuestionPrompt
+//   .pipe(llm)
+//   .pipe(new StringOutputParser());
 
 const llm = new ChatOpenAI();
 
 export async function POST(req: NextRequest) {
+  const { userId } = auth();
   const body = await req.json();
-  const { document_id } = body;
+  const { document_id, chat_id } = body;
   const messages = body.messages ?? [];
   const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
   const currentMessageContent = messages[messages.length - 1].content;
 
-  const standaloneQuestionPrompt = PromptTemplate.fromTemplate(
-    STANDALONE_QUESTION_TEMPLATE
-  );
   const answerPrompt = PromptTemplate.fromTemplate(ANSWER_TEMPLATE);
 
   function combineDocuments(docs: any[]) {
     return docs.map((doc) => doc.pageContent).join("\n\n");
   }
 
-  const standaloneQuestionChain = standaloneQuestionPrompt
-    .pipe(llm)
-    .pipe(new StringOutputParser());
-
   const retriever = await retrieveDoc(document_id);
 
   const retrieverChain = RunnableSequence.from([
-    (prevResult) => prevResult.standalone_question,
+    (prevResult) => prevResult.original_input.input,
     retriever,
     combineDocuments,
   ]);
@@ -63,9 +74,9 @@ export async function POST(req: NextRequest) {
   const outputParser = new BytesOutputParser();
 
   const answerChain = answerPrompt.pipe(llm).pipe(outputParser);
+
   const chain = RunnableSequence.from([
     {
-      standalone_question: standaloneQuestionChain,
       original_input: new RunnablePassthrough(),
     },
     {
@@ -80,16 +91,23 @@ export async function POST(req: NextRequest) {
     {
       chat_history: formattedPreviousMessages.join("\n"),
       input: currentMessageContent,
+    },
+    {
+      callbacks: [
+        {
+          async handleLLMEnd(output) {
+            const update_messages = [
+              ...messages,
+              {
+                role: "assistant",
+                content: output.generations[0][0].text,
+              },
+            ];
+            await updateMessages(chat_id, update_messages);
+          },
+        },
+      ],
     }
-    // {
-    //   callbacks: [
-    //     {
-    //       handleLLMEnd(output, runId, parentRunId, tags) {
-    //         console.log(output.generations[0][0].text);
-    //       },
-    //     },
-    //   ],
-    // }
   );
 
   return new StreamingTextResponse(stream);

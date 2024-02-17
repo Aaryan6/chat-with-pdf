@@ -5,6 +5,7 @@ import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import { UserButton } from "@clerk/nextjs";
 import { useChat } from "ai/react";
 import { useEffect, useRef } from "react";
+import { SendHorizontal } from "lucide-react";
 
 type ChatAppProps = {
   data: {
@@ -15,20 +16,30 @@ type ChatAppProps = {
     document_id: string;
     created_at: string;
   };
+  chatMessages: {
+    id: number;
+    user_id: string;
+    chat_id: number;
+    messages: any[];
+    created_at: string;
+    updated_at: string;
+  };
 };
 
-export function ChatApp({ data }: ChatAppProps) {
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
-    body: {
-      document_id: data.document_id,
-    },
-  });
+export function ChatApp({ data, chatMessages }: ChatAppProps) {
+  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+    useChat({
+      body: {
+        document_id: data.document_id,
+        chat_id: data.id,
+      },
+      initialMessages: chatMessages ? chatMessages.messages ?? [] : [],
+    });
   const chatRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     chatRef.current?.scrollTo(0, chatRef.current?.scrollHeight);
   }, [messages]);
-
   return (
     <div key="1" className="flex-1 flex h-screen bg-background">
       <section className="flex flex-col w-full">
@@ -65,6 +76,16 @@ export function ChatApp({ data }: ChatAppProps) {
               </p>
             </div>
           ))}
+          {isLoading && (
+            <div className={""}>
+              <p
+                className={`text-sm w-fit
+                 text-muted-foreground border border-secondary py-2.5 px-4 rounded-xl max-w-[90%] leading-normal animate-pulse`}
+              >
+                Thinking...
+              </p>
+            </div>
+          )}
         </main>
         <footer className="border-t dark:border-zinc-700">
           <form
@@ -72,12 +93,14 @@ export function ChatApp({ data }: ChatAppProps) {
             className="flex items-center gap-2 overflow-hidden px-2"
           >
             <Input
-              className="flex-1 h-full py-6 focus-visible:ring-0 border-none focus-visible:border-none"
+              className="flex-1 h-full py-6 focus-visible:ring-0 border-none focus-visible:border-none focus-visible:ring-transparent"
               value={input}
               onChange={handleInputChange}
               placeholder="Type a message..."
             />
-            <Button>Send</Button>
+            <Button>
+              <SendHorizontal size={20} />
+            </Button>
           </form>
         </footer>
       </section>
