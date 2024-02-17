@@ -24,7 +24,7 @@ export default function Navbar() {
         )}
       >
         <a
-          href="https://github.com/Aaryan6/ytsummarizer"
+          href="https://github.com/Aaryan6/chat-with-pdf"
           target="_blank"
           className="underline"
         >
