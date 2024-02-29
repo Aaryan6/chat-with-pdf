@@ -13,18 +13,20 @@ export default function Uploader() {
   const [pdf, setPdf] = useState<File | null>(null);
   const [loader, setLoader] = useState(false);
   const [openai_key, setOpenai_key] = useState<string | null>(null);
-  const onDrop = useCallback((acceptedFiles: any) => {
-    if (acceptedFiles[0].size > 10 * 1024 * 1024) {
-      toast({ title: "File size should be lower or equal to 10 MB" });
-      return;
-    } else {
-      if (openai_key) {
-        console.log(acceptedFiles);
-        onSubmit(acceptedFiles[0]);
-        setPdf(acceptedFiles[0]);
+  const onDrop = useCallback(
+    (acceptedFiles: any) => {
+      if (acceptedFiles[0].size > 10 * 1024 * 1024) {
+        toast({ title: "File size should be lower or equal to 10 MB" });
+        return;
+      } else {
+        if (openai_key) {
+          onSubmit(acceptedFiles[0]);
+          setPdf(acceptedFiles[0]);
+        }
       }
-    }
-  }, []);
+    },
+    [openai_key]
+  );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   const onSubmit = async (pdf_file: File) => {
@@ -69,7 +71,7 @@ export default function Uploader() {
     if (key) {
       setOpenai_key(key);
     }
-  }, [openai_key]);
+  }, []);
 
   return (
     <div className="flex space-x-2 justify-center">
