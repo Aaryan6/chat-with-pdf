@@ -1,6 +1,6 @@
 import { ChatApp } from "@/components/component/chatapp";
 import PDFViewer from "@/components/pdf-viewer";
-import { getChatByChatId, getMessages } from "@/actions/upload";
+import { getChatByChatId, getMessages } from "@/app/actions";
 import Sidebar from "./_components/sidebar";
 import { redirect } from "next/navigation";
 

@@ -2,6 +2,7 @@
 import { cn } from "@/lib/utils";
 import { UserButton } from "@clerk/nextjs";
 import { Righteous } from "next/font/google";
+import Link from "next/link";
 const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 
 export default function Navbar() {
@@ -23,6 +24,9 @@ export default function Navbar() {
           righteous.className
         )}
       >
+        <Link href={"/chat"} className="underline">
+          Chats
+        </Link>
         <a
           href="https://github.com/Aaryan6/chat-with-pdf"
           target="_blank"
@@ -30,7 +34,7 @@ export default function Navbar() {
         >
           Github
         </a>
-        <UserButton />
+        <UserButton afterSignOutUrl="/sign-in" />
       </div>
     </div>
   );

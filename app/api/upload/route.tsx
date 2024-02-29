@@ -1,4 +1,4 @@
-import { getFileUrl, uploadFile } from "@/actions/upload";
+import { getFileUrl, uploadFile } from "@/app/actions";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

@@ -3,9 +3,7 @@ import {
   createMessage,
   getFileUrl,
   uploadFile,
-} from "@/actions/upload";
-import { db } from "@/db/dbConnect";
-import { chats, messages } from "@/db/schema";
+} from "@/app/actions";
 import { generateEmbeddings } from "@/utils/generate-embeddings";
 import { loadPdf } from "@/utils/pdf-loader";
 import { auth } from "@clerk/nextjs";
@@ -18,8 +16,38 @@ export async function POST(req: Request) {
     const document_id = body.get("document_id");
     const file_name = body.get("file_name");
     const pdf = body.get(document_id as string);
+    const openai_key = body.get("key");
+
+    if (!openai_key) {
+      return NextResponse.json(
+        {
+          message: "OpenAI key not found!",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    // loading pdf
     const docs = await loadPdf(pdf as Blob, document_id as string);
-    await generateEmbeddings(docs);
+
+    // generating embeddings
+    const { success, res, error } = await generateEmbeddings(
+      docs,
+      openai_key as string
+    );
+    if (!success) {
+      return NextResponse.json(
+        {
+          message: "OpenAI Api key is invalid!",
+          error,
+        },
+        {
+          status: 500,
+        }
+      );
+    }
 
     const storedFile = await uploadFile(pdf as File, document_id as string);
     const fileUrl = await getFileUrl(storedFile!.path);

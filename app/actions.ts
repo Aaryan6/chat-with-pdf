@@ -1,9 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_KEY!
-);
+import { supabase } from "@/utils/use-supabase";
 
 export async function uploadFile(pdf: File, file_name: string) {
   try {
@@ -119,6 +114,35 @@ export async function getChats(userId: string) {
       .eq("user_id", userId);
     if (error) console.log(error);
     return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function storeEmail(email: string) {
+  try {
+    const { data, error } = await supabase.from("chatpdf-premium").insert([
+      {
+        email,
+      },
+    ]);
+    if (error) console.log(error);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function checkAccess(userId: string) {
+  try {
+    const { data, error } = await supabase
+      .from("chatpdf-chats")
+      .select("*")
+      .eq("user_id", userId);
+
+    if (error) console.log(error);
+    const isAccess = data!.length > 0 ? false : true;
+    return isAccess;
   } catch (error) {
     console.log(error);
   }

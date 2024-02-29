@@ -1,23 +1,27 @@
 "use client";
-import { CardContent, Card, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeftFromLine, PencilIcon, SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ModeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
+import useStore from "@/lib/hooks/store";
 
 export default function ChatHistory({ userChats }: { userChats: any }) {
   const router = useRouter();
+  const sidebar = useStore();
   return (
-    <aside className="w-80 border-r dark:border-zinc-700">
+    <div className="w-auto md:w-80 border-r dark:border-zinc-700 h-screen">
       <div className="p-4 space-y-4">
         <div className="flex justify-between items-center">
           <Button
             size={"sm"}
             variant="outline"
             className=""
-            onClick={() => router.push("/")}
+            onClick={() => {
+              sidebar.onClose();
+              router.push("/");
+            }}
           >
             <ArrowLeftFromLine className="mr-1 w-4 h-4" />
             Back
@@ -26,7 +30,14 @@ export default function ChatHistory({ userChats }: { userChats: any }) {
         </div>
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-semibold tracking-wide">History</h2>
-          <Button size="icon" variant="ghost">
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => {
+              sidebar.onClose();
+              router.push("/chat");
+            }}
+          >
             <PencilIcon className="w-4 h-4" />
           </Button>
         </div>
@@ -46,7 +57,7 @@ export default function ChatHistory({ userChats }: { userChats: any }) {
         <div className="flex flex-col gap-2">
           {userChats.map((chat: any) => (
             <Link href={`/chat/${chat.id}`} key={chat.id}>
-              <button className="w-full text-left bg-slate-900/50 text-slate-400 hover:text-white px-4 py-2 rounded-md">
+              <button className="w-full text-left bg-muted text-muted-foreground hover:text-foreground px-4 py-2 rounded-md">
                 <span className="text-sm">{chat.pdf_name}</span>
               </button>
             </Link>
@@ -56,6 +67,6 @@ export default function ChatHistory({ userChats }: { userChats: any }) {
           )}
         </div>
       </div>
-    </aside>
+    </div>
   );
 }

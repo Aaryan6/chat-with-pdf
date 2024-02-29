@@ -17,7 +17,7 @@ import {
 } from "@langchain/core/runnables";
 import { retrieveDoc } from "@/utils/retriever";
 import { ConversationalRetrievalQAChain } from "langchain/chains";
-import { updateMessages } from "@/actions/upload";
+import { updateMessages } from "@/app/actions";
 import { auth } from "@clerk/nextjs";
 
 export const runtime = "edge";
@@ -47,23 +47,21 @@ answer: `;
 //   .pipe(llm)
 //   .pipe(new StringOutputParser());
 
-const llm = new ChatOpenAI();
-
 export async function POST(req: NextRequest) {
-  const { userId } = auth();
   const body = await req.json();
-  const { document_id, chat_id } = body;
+  const { document_id, chat_id, vector_key } = body;
   const messages = body.messages ?? [];
   const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
   const currentMessageContent = messages[messages.length - 1].content;
 
+  const llm = new ChatOpenAI({ openAIApiKey: vector_key });
   const answerPrompt = PromptTemplate.fromTemplate(ANSWER_TEMPLATE);
 
   function combineDocuments(docs: any[]) {
     return docs.map((doc) => doc.pageContent).join("\n\n");
   }
 
-  const retriever = await retrieveDoc(document_id);
+  const retriever = await retrieveDoc(document_id, vector_key);
 
   const retrieverChain = RunnableSequence.from([
     (prevResult) => prevResult.original_input.input,

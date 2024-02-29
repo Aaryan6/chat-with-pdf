@@ -4,8 +4,9 @@ import { Input } from "@/components/ui/input";
 import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import { UserButton } from "@clerk/nextjs";
 import { useChat } from "ai/react";
-import { useEffect, useRef } from "react";
-import { SendHorizontal } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Menu, SendHorizontal } from "lucide-react";
+import useStore from "@/lib/hooks/store";
 
 type ChatAppProps = {
   data: {
@@ -27,21 +28,29 @@ type ChatAppProps = {
 };
 
 export function ChatApp({ data, chatMessages }: ChatAppProps) {
+  const [vector_key, setVectorKey] = useState<string>("");
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
       body: {
         document_id: data.document_id,
         chat_id: data.id,
+        vector_key,
       },
       initialMessages: chatMessages ? chatMessages.messages ?? [] : [],
     });
   const chatRef = useRef<HTMLDivElement>(null);
+  const sidebar = useStore();
 
   useEffect(() => {
     chatRef.current?.scrollTo(0, chatRef.current?.scrollHeight);
   }, [messages]);
+
+  useEffect(() => {
+    setVectorKey(sessionStorage.getItem("vector_key") as string);
+  }, [vector_key]);
+
   return (
-    <div key="1" className="flex-1 flex h-screen bg-background">
+    <div className="flex-1 flex h-screen bg-background">
       <section className="flex flex-col w-full">
         <header className="flex justify-between items-center border-b dark:border-zinc-700 p-4">
           <h2 className="text-xl font-bold flex items-center gap-2">
@@ -57,7 +66,16 @@ export function ChatApp({ data, chatMessages }: ChatAppProps) {
               <span className="text-xs text-green-600 block">Online</span>
             </div>
           </h2>
-          <UserButton />
+          <div className="flex items-center gap-x-2">
+            <UserButton />
+            <Button
+              variant={"ghost"}
+              onClick={sidebar.onOpen}
+              className="flex md:hidden"
+            >
+              <Menu size={20} />
+            </Button>
+          </div>
         </header>
         <main className="flex-1 overflow-auto p-4 space-y-2" ref={chatRef}>
           {messages.map((message, index) => (

@@ -1,19 +1,23 @@
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
-import { createClient } from "@supabase/supabase-js";
 import * as dotenv from "dotenv";
+import { supabase } from "./use-supabase";
 dotenv.config();
 
-const client = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_KEY!
-);
-
-export async function generateEmbeddings(docs: any[]) {
-  await SupabaseVectorStore.fromDocuments(docs, new OpenAIEmbeddings(), {
-    client,
-    tableName: "documents",
-    queryName: "match_documents",
-  });
-  return { success: true };
+export async function generateEmbeddings(docs: any[], openai_key: string) {
+  try {
+    const res = await SupabaseVectorStore.fromDocuments(
+      docs,
+      new OpenAIEmbeddings({ openAIApiKey: openai_key }),
+      {
+        client: supabase,
+        tableName: "documents",
+        queryName: "match_documents",
+      }
+    );
+    return { success: true, res };
+  } catch (error) {
+    console.log("from embedddings", error);
+    return { success: false, error };
+  }
 }
