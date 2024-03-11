@@ -1,11 +1,13 @@
-"use client";
+import { getAllUserChats } from "@/app/actions";
 import { cn } from "@/lib/utils";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, auth } from "@clerk/nextjs";
 import { Righteous } from "next/font/google";
 import Link from "next/link";
 const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 
-export default function Navbar() {
+export default async function Navbar() {
+  const { userId } = auth();
+  const hasChats = await getAllUserChats(userId as string);
   return (
     <div className="text-white z-50 flex items-center justify-between w-full max-w-[87rem] mx-auto px-4 md:px-4 py-6">
       <div className="">
@@ -24,9 +26,11 @@ export default function Navbar() {
           righteous.className
         )}
       >
-        <Link href={"/chat"} className="underline">
-          Chats
-        </Link>
+        {hasChats && (
+          <Link href={"/chat"} className="underline">
+            Chats
+          </Link>
+        )}
         <a
           href="https://github.com/Aaryan6/chat-with-pdf"
           target="_blank"

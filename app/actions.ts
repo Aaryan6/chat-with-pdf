@@ -147,3 +147,18 @@ export async function checkAccess(userId: string) {
     console.log(error);
   }
 }
+
+export async function getAllUserChats(userId: string) {
+  try {
+    const { data, error } = await supabase
+      .from("chatpdf-chats")
+      .select("*")
+      .eq("user_id", userId);
+
+    if (error) console.log(error);
+    const hasChats = data!.length > 0 ? true : false;
+    return hasChats;
+  } catch (error) {
+    console.log(error);
+  }
+}

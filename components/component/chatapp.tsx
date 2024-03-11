@@ -52,8 +52,8 @@ export function ChatApp({ data, chatMessages }: ChatAppProps) {
   return (
     <div className="flex-1 flex h-screen bg-background">
       <section className="flex flex-col w-full">
-        <header className="flex justify-between items-center border-b dark:border-zinc-700 p-4">
-          <h2 className="text-xl font-bold flex items-center gap-2">
+        <header className="flex justify-between items-center border-b dark:border-zinc-700 p-2 md:p-4">
+          <div className="text-base md:text-xl font-medium md:font-bold flex items-center gap-2">
             <Avatar className="relative overflow-visible w-10 h-10">
               <span className="absolute right-0 top-0 flex h-3 w-3 rounded-full bg-green-600" />
               <AvatarImage alt="User Avatar" src="/placeholder-avatar.jpg" />
@@ -61,11 +61,11 @@ export function ChatApp({ data, chatMessages }: ChatAppProps) {
                 {data.pdf_name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <div>
-              <h2>{data.pdf_name}</h2>
+            <div className="text-wrap w-full flex flex-col">
+              <h2 className="break-all">{data.pdf_name}</h2>
               <span className="text-xs text-green-600 block">Online</span>
             </div>
-          </h2>
+          </div>
           <div className="flex items-center gap-x-2">
             <UserButton />
             <Button

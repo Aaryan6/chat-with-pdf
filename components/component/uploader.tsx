@@ -80,7 +80,7 @@ export default function Uploader() {
       ) : (
         <div
           {...getRootProps()}
-          className="h-56 w-auto mt-4 aspect-[3/1.5] mx-auto bg-sky-200/10 text-slate-400 rounded-xl border-2 border-slate-300 grid place-items-center px-6"
+          className="h-56 w-full max-w-lg mt-4 mx-auto bg-sky-200/10 text-slate-400 rounded-xl border-2 border-slate-300 grid place-items-center px-6"
         >
           <input {...getInputProps()} />
           {pdf ? (

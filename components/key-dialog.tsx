@@ -21,28 +21,30 @@ export function KeyDialog({
   return (
     <form
       onSubmit={onSubmit}
-      className="mt-12 rounded-2xl bg-slate-900 py-12 px-8 max-w-md mx-auto w-full"
+      className="mt-12 rounded-2xl border py-12 px-8 max-w-md mx-auto w-full"
     >
       <div className="w-full flex flex-col gap-y-2">
-        <h1 className="font-medium text-lg text-left ml-1">
-          Enter The OpenAI Api Key
+        <h1 className="font-medium text-lg text-center mx-auto mb-4">
+          You Need An OpenAI Api Key : {")"}
         </h1>
-        <Input
-          id="key"
-          placeholder="sk-..."
-          type="key"
-          className="w-full"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-        />
-        <Button
-          type="submit"
-          className="w-fit mt-1"
-          size={"sm"}
-          variant={"default"}
-        >
-          Submit
-        </Button>
+        <div className="flex gap-x-2">
+          <Input
+            id="key"
+            placeholder="sk-..."
+            type="key"
+            className="w-full"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+          />
+          <Button
+            type="submit"
+            className="w-fit mt-1"
+            size={"sm"}
+            variant={"default"}
+          >
+            Submit
+          </Button>
+        </div>
       </div>
     </form>
   );
